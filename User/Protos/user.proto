@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "User";
+
+package user;
+
+// The greeting service definition.
+service Users {
+  // Sends a greeting
+  rpc GetById (GetByIdRequest) returns (GetByIdResponce);
+}
+
+// The request message containing the user's name.
+message GetByIdRequest {
+  string id = 1;
+}
+
+// The response message containing the greetings.
+message GetByIdResponce {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string number = 4;
+  google.protobuf.StringValue description = 5;
+  UserRole role = 6;
+}
+
+enum UserRole {
+  user_role_teacher = 0;
+  user_role_student = 1;
+}
