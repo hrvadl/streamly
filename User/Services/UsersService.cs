@@ -15,16 +15,20 @@ public class UsersService : Users.UsersBase
         this.context = context;
     }
 
-    public override Task<GetByIdResponce> GetById(GetByIdRequest request, ServerCallContext context)
+    public override Task<GetByIdResponse> GetById(GetByIdRequest request, ServerCallContext context)
     {
-        return Task.FromResult(new GetByIdResponce
+        return Task.FromResult(new GetByIdResponse
         {
             Id = "guid",
             Name = "Name",
             Email = "Email.com",
             Number = "+380500",
             Description = null,
-            Role = UserRole.Student,
+            Role = new UserRole
+            {
+                Id = 1,
+                Name = "Student",
+            },
         });
     }
 }

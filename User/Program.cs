@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using User.Infrastructure.Persistence;
+using User.Infrastructure.Seeding;
 using User.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,15 +27,6 @@ app.MapGrpcService<UsersService>();
 app.MapGrpcReflectionService();
 app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    var context = services.GetRequiredService<UserDbContext>();
-    if (context.Database.GetPendingMigrations().Any())
-    {
-        context.Database.Migrate();
-    }
-}
+app.SeedDatabase();
 
 app.Run();
