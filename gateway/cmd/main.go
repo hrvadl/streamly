@@ -8,5 +8,5 @@ import (
 func main() {
 	r := gin.Default()
 	c := config.Load()
-	r.Run(":5000")
+	r.Run(c.Port)
 }
