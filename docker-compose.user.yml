@@ -1,0 +1,28 @@
+services:
+  user-mysql:
+    image: mysql:latest
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+    networks:
+      - user-net
+    container_name: user-mysql
+  user-micreservice:
+    build: ./User
+    ports:
+      - 8080:80
+    environment:
+      - ConnectionStrings__DbConnectionString=Server=user-mysql;Database=UserMicroservice;Uid=root;Pwd=secret;
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - user-net
+    container_name: user-microservice
+    restart: on-failure
+    depends_on:
+      - user-mysql
+
+networks:
+  user-net:
+    name: user-net
+    driver: bridge
