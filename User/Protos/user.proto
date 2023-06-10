@@ -28,6 +28,6 @@ message GetByIdResponse {
 }
 
 message UserRole {
-  int32 id = 1;
-  string name = 2;
+  int32 id = 7;
+  string name = 8;
 }
