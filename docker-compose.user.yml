@@ -8,7 +8,7 @@ services:
     networks:
       - user-net
     container_name: user-mysql
-  user-micreservice:
+  user:
     build: ./User
     env_file:
       - user.env
@@ -16,7 +16,7 @@ services:
       - 8080:80
     networks:
       - user-net
-    container_name: user-microservice
+    container_name: user
     restart: on-failure
     depends_on:
       - user-mysql
