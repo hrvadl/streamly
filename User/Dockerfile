@@ -3,7 +3,6 @@ WORKDIR /source
 
 # copy csproj and restore as distinct layers
 ADD . .
-WORKDIR /source/backend
 RUN dotnet restore
 
 # copy everything else and build app
