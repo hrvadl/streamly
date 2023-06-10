@@ -1,0 +1,27 @@
+services:
+  user-mysql:
+    image: mysql:latest
+    env_file:
+      - user.env
+    ports:
+      - 3306:3306
+    networks:
+      - user-net
+    container_name: user-mysql
+  user:
+    build: ./User
+    env_file:
+      - user.env
+    ports:
+      - 8080:80
+    networks:
+      - user-net
+    container_name: user
+    restart: on-failure
+    depends_on:
+      - user-mysql
+
+networks:
+  user-net:
+    name: user-net
+    driver: bridge
