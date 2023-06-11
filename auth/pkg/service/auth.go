@@ -15,7 +15,11 @@ func New() *AuthService {
 }
 
 func (s *AuthService) SignIn(ctx context.Context, in *pb.SignInRequest) (*pb.SignInResponse, error) {
-	return &pb.SignInResponse{}, nil
+	return &pb.SignInResponse{
+		Email: "mail",
+		Phone: "phone",
+		Role:  "role",
+	}, nil
 }
 
 func (s *AuthService) SignUp(ctx context.Context, in *pb.SignUpRequest) (*pb.SignUpResponse, error) {

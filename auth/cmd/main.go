@@ -23,5 +23,6 @@ func main() {
 
 	gRPCServer := grpc.NewServer()
 	pb.RegisterAuthServer(gRPCServer, authService)
+	fmt.Printf("server listening on port %v", c.Port)
 	gRPCServer.Serve(TCPServer)
 }
