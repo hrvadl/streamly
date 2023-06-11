@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hrvadl/studdy-buddy/gateway/adapter"
+	"github.com/hrvadl/studdy-buddy/gateway/pkg/adapter"
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/config"
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/user/pb"
 	"google.golang.org/grpc"
