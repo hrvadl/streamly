@@ -11,6 +11,7 @@ type Config struct {
 	UserServiceURL  string `mapstructure:"USR_URL"`
 	EmailServiceURL string `mapstructure:"EMAIL_URL"`
 	AdServiceURL    string `mapstructure:"AD_URL"`
+	AuthServiceURL  string `mapstructure:"AUTH_SERVICE_URL"`
 }
 
 func Load() *Config {
