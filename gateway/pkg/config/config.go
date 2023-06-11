@@ -11,13 +11,16 @@ type Config struct {
 	UserServiceURL  string `mapstructure:"USR_URL"`
 	EmailServiceURL string `mapstructure:"EMAIL_URL"`
 	AdServiceURL    string `mapstructure:"AD_URL"`
-	AuthServiceURL  string `mapstructure:"AUTH_SERVICE_URL"`
+	AuthServiceURL  string `mapstructure:"AUTH_URL"`
 }
 
 func Load() *Config {
 	var config Config
-	viper.AddConfigPath("/")
+	viper.AddConfigPath("./")
+	viper.AddConfigPath("../")
+	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
+	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatalf("cannot read .env file %v", err)

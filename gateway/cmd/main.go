@@ -1,12 +1,14 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
+
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/config"
+	"github.com/hrvadl/studdy-buddy/gateway/pkg/router"
 )
 
 func main() {
-	r := gin.Default()
 	c := config.Load()
-	r.Run(c.Port)
+	r := router.Configure(c)
+	r.Run(fmt.Sprintf(":%v", c.Port))
 }
