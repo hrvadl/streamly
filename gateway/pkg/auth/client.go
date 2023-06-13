@@ -8,6 +8,7 @@ import (
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/auth/pb"
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/config"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type AuthServiceClient struct {
@@ -23,7 +24,7 @@ func NewService(ac pb.AuthClient) *AuthServiceClient {
 }
 
 func InitClient(c *config.Config) pb.AuthClient {
-	conn, err := grpc.Dial(c.AuthServiceURL, grpc.WithInsecure())
+	conn, err := grpc.Dial(c.AuthServiceURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		log.Fatalf("cannot connect to auth service on URL %v %v", c.AuthServiceURL, err)

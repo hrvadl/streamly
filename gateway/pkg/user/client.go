@@ -8,6 +8,7 @@ import (
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/config"
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/user/pb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type UserServiceClient struct {
@@ -31,7 +32,7 @@ func NewService(uc pb.UsersClient) *UserServiceClient {
 }
 
 func InitClient(c *config.Config) pb.UsersClient {
-	conn, err := grpc.Dial(c.UserServiceURL, grpc.WithInsecure())
+	conn, err := grpc.Dial(c.UserServiceURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
 		log.Fatalf("cannot connect to user service on URL %v %v", c.UserServiceURL, err)
