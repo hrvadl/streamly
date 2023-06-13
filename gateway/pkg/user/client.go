@@ -14,14 +14,15 @@ type UserServiceClient struct {
 	client pb.UsersClient
 }
 
+func getUserIDFromURL(ctx *gin.Context) (*pb.GetByIdRequest, error) {
+	return &pb.GetByIdRequest{
+		Id: ctx.Param("id"),
+	}, nil
+}
+
 func (c *UserServiceClient) HandleGetByID() gin.HandlerFunc {
 	return adapter.Wrap[pb.GetByIdRequest, pb.GetByIdResponse](
-		c.client.GetById,
-		func(ctx *gin.Context) (*pb.GetByIdRequest, error) {
-			return &pb.GetByIdRequest{
-				Id: ctx.Param("id"),
-			}, nil
-		},
+		c.client.GetById, getUserIDFromURL,
 	)
 }
 

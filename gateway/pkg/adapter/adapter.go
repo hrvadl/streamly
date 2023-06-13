@@ -26,21 +26,27 @@ func WithBodyExtractor[T any](ctx *gin.Context) (*T, error) {
 	return &in, nil
 }
 
-func Wrap[T any, R any](h RPCHandlerFunc[T, R], inExt InExtractor[T]) gin.HandlerFunc {
+func WrapWithStatus[T any, R any](h RPCHandlerFunc[T, R], inExt InExtractor[T], statusSuccess int) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		in, err := inExt(ctx)
 
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			return
 		}
 
 		resp, err := h(ctx, in)
 
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusBadGateway, err.Error())
+			status, msg := ToHTTPError(err)
+			ctx.AbortWithStatusJSON(status, msg)
 			return
 		}
 
-		ctx.JSON(http.StatusOK, resp)
+		ctx.JSON(statusSuccess, resp)
 	}
+}
+
+func Wrap[T any, R any](h RPCHandlerFunc[T, R], inExt InExtractor[T]) gin.HandlerFunc {
+	return WrapWithStatus[T, R](h, inExt, http.StatusOK)
 }
