@@ -18,7 +18,7 @@ func (c *AuthServiceClient) HandleSignIn() gin.HandlerFunc {
 	return adapter.Wrap[pb.SignInRequest, pb.SignInResponse](c.client.SignIn, adapter.WithBodyExtractor[pb.SignInRequest])
 }
 
-func NewClient(ac pb.AuthClient) *AuthServiceClient {
+func NewService(ac pb.AuthClient) *AuthServiceClient {
 	return &AuthServiceClient{ac}
 }
 

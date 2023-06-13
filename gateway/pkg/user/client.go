@@ -26,7 +26,7 @@ func (c *UserServiceClient) HandleGetByID() gin.HandlerFunc {
 	)
 }
 
-func NewClient(uc pb.UsersClient) *UserServiceClient {
+func NewService(uc pb.UsersClient) *UserServiceClient {
 	return &UserServiceClient{uc}
 }
 
