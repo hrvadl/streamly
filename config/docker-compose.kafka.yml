@@ -1,10 +1,6 @@
 services:
   zookeeper:
     image: quay.io/debezium/zookeeper
-    ports:
-      - 2181:2181
-      - 2888:2888
-      - 3888:3888
     env_file:
       - .env
     networks:
@@ -12,8 +8,6 @@ services:
     container_name: zookeeper
   kafka:
     image: quay.io/debezium/kafka
-    ports:
-      - 9092:9092
     env_file:
       - .env
     networks:
@@ -24,8 +18,6 @@ services:
   connect:
     image: connector
     build: ../replicator
-    ports:
-      - 8083:8083
     networks:
       - studdy-buddy-net 
     container_name: connect

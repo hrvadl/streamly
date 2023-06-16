@@ -2,8 +2,6 @@ services:
   auth:
     build: ../auth
     image: auth
-    ports:
-      - 3030:3030
     networks:
       - studdy-buddy-net
     container_name: auth
