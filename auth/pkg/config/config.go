@@ -1,29 +1,19 @@
 package config
 
 import (
-	"log"
+	"os"
 
-	"github.com/spf13/viper"
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
-	Port string `mapstructure:"AUTH_PORT"`
+	Port string
 }
 
 func Load() *Config {
-	var config Config
-	viper.AddConfigPath("./")
-	viper.SetConfigName(".env")
-	viper.SetConfigType("env")
-	viper.AutomaticEnv()
+	godotenv.Load()
 
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("cannot read .env file %v", err)
+	return &Config{
+		Port: os.Getenv("AUTH_PORT"),
 	}
-
-	if err := viper.Unmarshal(&config); err != nil {
-		log.Fatalf("cannot unmarshal config into struct: %v", err)
-	}
-
-	return &config
 }
