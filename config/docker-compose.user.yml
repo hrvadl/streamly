@@ -3,8 +3,6 @@ services:
     image: mysql:latest
     env_file:
       - .env
-    ports:
-      - 3306:3306
     networks:
       - studdy-buddy-net
     container_name: user-mysql
@@ -15,8 +13,6 @@ services:
     image: user
     env_file:
       - .env
-    ports:
-      - 8080:80
     networks:
       - studdy-buddy-net
     container_name: user
@@ -38,5 +34,5 @@ services:
     networks:
       - studdy-buddy-net
     volumes:
-      - ./docker-entrypoint.user.sh:/tmp/entrypoint.sh
+      - ./replicas/source.user.sh:/tmp/entrypoint.sh
     command: sh -c "/tmp/entrypoint.sh"

@@ -35,18 +35,6 @@ services:
       - ./.env:/data/credentials.properties
     depends_on:
       - kafka
-  gateway:
-    build: ../gateway
-    image: gateway
-    ports:
-      - 6666:6666
-    networks:
-      - studdy-buddy-net
-    container_name: gateway
-    env_file:
-      - .env
-    depends_on:
-      - user
 
 networks:
   studdy-buddy-net:
