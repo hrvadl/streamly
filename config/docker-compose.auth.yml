@@ -9,3 +9,4 @@ services:
       - .env
     depends_on:
       - user
+      
