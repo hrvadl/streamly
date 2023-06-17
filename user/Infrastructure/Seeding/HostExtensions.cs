@@ -18,19 +18,7 @@ public static class HostExtensions
             {
                 context.Database.Migrate();
             }
-
-            SeedRoles(context);
         }
-    }
-
-    private static void SeedRoles(UserDbContext context)
-    {
-        UserRoleEntity[] roles = new[]
-        {
-            new UserRoleEntity { Name =  "Teacher" },
-            new UserRoleEntity { Name =  "Student" },
-        };
-        SaveList(roles, context);
     }
 
     private static void SaveList<T>(IEnumerable<T> entities, UserDbContext context) where T : class
