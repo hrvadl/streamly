@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+
+option csharp_namespace = "User";
+
+package user;
+
+// Users service definition.
+service Users {
+  rpc Create (CreateRequest) returns (CreateResponse);
+  rpc GetById (GetByIdRequest) returns (GetByIdResponse);
+}
+
+
+// Create
+message CreateRequest {
+  string login = 2;
+  string email = 3;
+  string password = 4;
+}
+message CreateResponse {
+  int32 id = 1;
+}
+
+// GetById
+message GetByIdRequest {
+  int32 id = 1;
+}
+message GetByIdResponse {
+  int32 id = 1;
+  string login = 2;
+  string email = 3;
+}

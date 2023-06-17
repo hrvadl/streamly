@@ -9,7 +9,7 @@ services:
     depends_on:
       - connect
   user:
-    build: ../User
+    build: ../user
     image: user
     env_file:
       - .env
@@ -20,7 +20,7 @@ services:
     depends_on:
       - user-mysql
   user_db_cfg:
-    build: 
+    build:
       context: .
       dockerfile: ../replicator/alpine.Dockerfile
     container_name: user_db_cfg
@@ -30,7 +30,7 @@ services:
       - user
       - kafka
       - connect
-    restart: on-failure 
+    restart: on-failure
     networks:
       - studdy-buddy-net
     volumes:
