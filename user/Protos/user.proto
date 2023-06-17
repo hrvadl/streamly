@@ -6,28 +6,30 @@ option csharp_namespace = "User";
 
 package user;
 
-// The greeting service definition.
+// Users service definition.
 service Users {
-  // Sends a greeting
+  rpc Create (CreateRequest) returns (CreateResponse);
   rpc GetById (GetByIdRequest) returns (GetByIdResponse);
 }
 
-// The request message containing the user's name.
+
+// Create
+message CreateRequest {
+  string id = 1;
+  string login = 2;
+  string email = 3;
+  string password = 4;
+}
+message CreateResponse {
+  string id = 1;
+}
+
+// GetById
 message GetByIdRequest {
   string id = 1;
 }
-
-// The response message containing the greetings.
 message GetByIdResponse {
   string id = 1;
-  string name = 2;
+  string login = 2;
   string email = 3;
-  string number = 4;
-  google.protobuf.StringValue description = 5;
-  UserRole role = 6;
-}
-
-message UserRole {
-  int32 id = 7;
-  string name = 8;
 }
