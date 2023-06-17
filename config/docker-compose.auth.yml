@@ -1,0 +1,12 @@
+services:
+  auth:
+    build: ../auth
+    image: auth
+    networks:
+      - studdy-buddy-net
+    container_name: auth
+    env_file:
+      - .env
+    depends_on:
+      - user
+      

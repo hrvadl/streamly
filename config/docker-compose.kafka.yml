@@ -1,0 +1,34 @@
+services:
+  zookeeper:
+    image: quay.io/debezium/zookeeper
+    env_file:
+      - .env
+    networks:
+      - studdy-buddy-net 
+    container_name: zookeeper
+  kafka:
+    image: quay.io/debezium/kafka
+    env_file:
+      - .env
+    networks:
+      - studdy-buddy-net 
+    container_name: kafka
+    depends_on:
+      - zookeeper
+  connect:
+    image: connector
+    build: ../replicator
+    networks:
+      - studdy-buddy-net 
+    container_name: connect
+    env_file:
+      - .env
+    volumes:
+      - ./.env:/data/credentials.properties
+    depends_on:
+      - kafka
+
+networks:
+  studdy-buddy-net:
+    name: studdy-buddy-net 
+    driver: bridge

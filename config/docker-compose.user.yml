@@ -1,0 +1,38 @@
+services:
+  user-mysql:
+    image: mysql:latest
+    env_file:
+      - .env
+    networks:
+      - studdy-buddy-net
+    container_name: user-mysql
+    depends_on:
+      - connect
+  user:
+    build: ../User
+    image: user
+    env_file:
+      - .env
+    networks:
+      - studdy-buddy-net
+    container_name: user
+    restart: on-failure
+    depends_on:
+      - user-mysql
+  user_db_cfg:
+    build: 
+      context: .
+      dockerfile: ../replicator/alpine.Dockerfile
+    container_name: user_db_cfg
+    env_file:
+      - .env
+    depends_on:
+      - user
+      - kafka
+      - connect
+    restart: on-failure 
+    networks:
+      - studdy-buddy-net
+    volumes:
+      - ./replicas/source.user.sh:/tmp/entrypoint.sh
+    command: sh -c "/tmp/entrypoint.sh"

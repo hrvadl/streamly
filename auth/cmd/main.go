@@ -12,17 +12,19 @@ import (
 )
 
 func main() {
+	l := log.Default()
+	l.Print("auth service starting...")
 	c := config.Load()
 	TCPServer, err := net.Listen("tcp", fmt.Sprintf(":%v", c.Port))
 
 	if err != nil {
-		log.Fatalf("cannot listen on TCP PORT %v %v", c.Port, err)
+		l.Fatalf("cannot listen on TCP PORT %v %v", c.Port, err)
 	}
 
 	authService := service.New()
 
 	gRPCServer := grpc.NewServer()
 	pb.RegisterAuthServer(gRPCServer, authService)
-	fmt.Printf("server listening on port %v", c.Port)
+	l.Printf("server listening on port %v", c.Port)
 	gRPCServer.Serve(TCPServer)
 }
