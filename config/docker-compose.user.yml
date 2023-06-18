@@ -33,6 +33,8 @@ services:
       - kafka
       - connect
     restart: on-failure
+    ports:
+      - 8080:80
     networks:
       - studdy-buddy-net
     volumes:
