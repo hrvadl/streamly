@@ -2,6 +2,7 @@ package user
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/adapter"
@@ -16,14 +17,26 @@ type UserServiceClient struct {
 }
 
 func getUserIDFromURL(ctx *gin.Context) (*pb.GetByIdRequest, error) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &pb.GetByIdRequest{
-		Id: ctx.Param("id"),
+		Id: int32(id),
 	}, nil
 }
 
 func (c *UserServiceClient) HandleGetByID() gin.HandlerFunc {
 	return adapter.Wrap[pb.GetByIdRequest, pb.GetByIdResponse](
 		c.client.GetById, getUserIDFromURL,
+	)
+}
+
+func (c *UserServiceClient) HandleCreate() gin.HandlerFunc {
+	return adapter.Wrap[pb.CreateRequest, pb.CreateResponse](
+		c.client.Create, adapter.WithBodyExtractor[pb.CreateRequest],
 	)
 }
 
