@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 
@@ -8,8 +9,12 @@ import (
 )
 
 type Config struct {
-	Port string
-	DNS  string
+	Port           string
+	DNS            string
+	UserServiceURL string
+	TokenIssuer    string
+	TokenAudience  string
+	JwtKey         string
 }
 
 func Load() *Config {
@@ -20,7 +25,11 @@ func Load() *Config {
 	}
 
 	return &Config{
-		Port: os.Getenv("AUTH_PORT"),
-		DNS:  os.Getenv("AUTH_DB_DNS"),
+		Port:           os.Getenv("AUTH_PORT"),
+		DNS:            os.Getenv("AUTH_DB_DNS"),
+		UserServiceURL: os.Getenv("USR_URL"),
+		TokenIssuer:    os.Getenv("AUTH_ISSUER"),
+		TokenAudience:  os.Getenv("AUTH_AUDIENCE"),
+		JwtKey:         base64.StdEncoding.EncodeToString([]byte(os.Getenv("AUTH_JWT_KEY"))),
 	}
 }

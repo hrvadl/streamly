@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type AuthClient interface {
 	SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error)
 	SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*SignUpResponse, error)
+	GenerateHash(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*HashResponse, error)
 }
 
 type authClient struct {
@@ -52,12 +53,22 @@ func (c *authClient) SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc
 	return out, nil
 }
 
+func (c *authClient) GenerateHash(ctx context.Context, in *HashRequest, opts ...grpc.CallOption) (*HashResponse, error) {
+	out := new(HashResponse)
+	err := c.cc.Invoke(ctx, "/auth.Auth/GenerateHash", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
 type AuthServer interface {
 	SignIn(context.Context, *SignInRequest) (*SignInResponse, error)
 	SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error)
+	GenerateHash(context.Context, *HashRequest) (*HashResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedAuthServer) SignIn(context.Context, *SignInRequest) (*SignInR
 }
 func (UnimplementedAuthServer) SignUp(context.Context, *SignUpRequest) (*SignUpResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
+}
+func (UnimplementedAuthServer) GenerateHash(context.Context, *HashRequest) (*HashResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateHash not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -120,6 +134,24 @@ func _Auth_SignUp_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_GenerateHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HashRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).GenerateHash(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/auth.Auth/GenerateHash",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).GenerateHash(ctx, req.(*HashRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -134,6 +166,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignUp",
 			Handler:    _Auth_SignUp_Handler,
+		},
+		{
+			MethodName: "GenerateHash",
+			Handler:    _Auth_GenerateHash_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
