@@ -15,7 +15,7 @@ func Init(config *config.Config) *gorm.DB {
 	db, err := gorm.Open(mysqlConn, &gorm.Config{})
 
 	if err != nil {
-		log.Fatalf("cannot open connection tp DB: %v", err)
+		log.Fatalf("cannot open connection to DB: %v", err)
 	}
 
 	db.AutoMigrate(&models.User{})
