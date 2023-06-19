@@ -65,6 +65,8 @@ services:
     networks:
       - dev-net 
     container_name: kafka
+    ports:
+      - 9092:9092
     depends_on:
       - zookeeper
   connect:
@@ -77,8 +79,6 @@ services:
       - .env
     volumes:
       - ./.env:/data/credentials.properties
-    ports:
-      - 9092:9092
     depends_on:
       - kafka
       - user-mysql
@@ -142,6 +142,18 @@ services:
     volumes:
       - ./replicas/sink.auth.sh:/tmp/entrypoint.sh
     command: sh -c "sh /tmp/entrypoint.sh"
+
+  email:
+    build: ../email
+    image: email
+    container_name: email
+    env_file:
+      - .env
+    restart: on-failure
+    depends_on:
+      - kafka
+    networks:
+      - dev-net
 
 networks:
   dev-net:

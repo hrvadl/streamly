@@ -18,9 +18,11 @@ const checkDelay = time.Second
 func InitConsumer(cfg *config.Config, l *log.Logger) {
 	sigchan := make(chan os.Signal, 1)
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers": cfg.BootstrapServers,
-		"group.id":          cfg.GroupID,
-		"auto.offset.reset": "earliest",
+		"bootstrap.servers":        cfg.BootstrapServers,
+		"group.id":                 cfg.GroupID,
+		"auto.offset.reset":        "earliest",
+		"session.timeout.ms":       6000,
+		"allow.auto.create.topics": true,
 	})
 
 	if err != nil {
@@ -28,6 +30,7 @@ func InitConsumer(cfg *config.Config, l *log.Logger) {
 	}
 
 	consumer.SubscribeTopics([]string{"sendEmail"}, nil)
+	defer consumer.Close()
 	l.Println("created email consumer")
 
 	email := service.InitEmail(cfg)
