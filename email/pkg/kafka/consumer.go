@@ -16,10 +16,9 @@ import (
 const checkDelay = time.Second
 
 func normalizeReceivers(receivers []string) []lib.SendSmtpEmailTo {
-	sendTo := make([]lib.SendSmtpEmailTo, len(receivers))
+	sendTo := make([]lib.SendSmtpEmailTo, 0, len(receivers))
 
 	for _, r := range receivers {
-
 		sendTo = append(sendTo, lib.SendSmtpEmailTo{Email: r})
 	}
 
@@ -72,10 +71,12 @@ cons:
 				continue
 			}
 
+			r := normalizeReceivers(mp.Receivers)
+
 			_, err = email.SendEmail(&lib.SendSmtpEmail{
 				Sender:      &lib.SendSmtpEmailSender{Email: "test@example.com"},
-				To:          normalizeReceivers(mp.Receivers),
 				HtmlContent: mp.HTML,
+				To:          r,
 				Subject:     mp.Subject,
 			})
 
