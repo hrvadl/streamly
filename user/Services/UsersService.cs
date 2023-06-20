@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using User.Entities;
 using User.Infrastructure.Persistence;
+using User.Infrastructure.Razor.PasswordReset;
 
 namespace User.Services;
 
@@ -75,12 +76,17 @@ public class UsersService : Users.UsersBase
 
     public override async Task<Empty> ResetPassword(ResetPasswordRequest request, ServerCallContext context)
     {
+        var emailTemplate = new PasswordResetTemplate()
+        {
+            ResetLink = request.Email,
+        };
+        var emailHtml = await emailTemplate.RenderAsync(context.CancellationToken);
         using (var producer = new ProducerBuilder<Null, byte[]>(messagesProducerConfig).SetValueSerializer(Serializers.ByteArray).Build())
         {
             var payload = new MailPayload()
             {
                 Subject = "Password reset",
-                HTML = Guid.NewGuid().ToString(),
+                HTML = emailHtml,
             };
             payload.Receivers.Add(request.Email);
             await producer.ProduceAsync("sendEmail", new Message<Null, byte[]>
