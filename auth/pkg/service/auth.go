@@ -61,7 +61,7 @@ func (s *AuthService) SignIn(ctx context.Context, in *pb.SignInRequest) (*pb.Sig
 func (s *AuthService) SignUp(ctx context.Context, in *pb.SignUpRequest) (*pb.SignUpResponse, error) {
 	_, err := s.userReader.FindByEmailOrLogin(in.Email, in.Login)
 
-	if !errors.Is(err, gorm.ErrRecordNotFound) {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, status.Error(codes.AlreadyExists, "User with such email already exists")
 	}
 
