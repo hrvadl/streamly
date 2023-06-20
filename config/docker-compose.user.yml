@@ -18,7 +18,7 @@ services:
     environment:
       - ConnectionStrings__DbConnectionString=${USER_MYSQL_CONNECTION_STRING}
       - ASPNETCORE_URLS=${USER_PORT}
-      - Kafka_BootstrapServers=${USER_KAFKA_BOOTSTRAP_SERVERS}
+      - Kafka__BootstrapServers=${USER_KAFKA_BOOTSTRAP_SERVERS}
     ports:
       - 5500:80
     networks:
