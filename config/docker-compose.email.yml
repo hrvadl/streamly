@@ -1,0 +1,12 @@
+services:
+  email:
+    build: ../email
+    image: email
+    container_name: email
+    env_file:
+      - .env
+    restart: on-failure
+    depends_on:
+      - kafka
+    networks:
+      - studdy-buddy-net

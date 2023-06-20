@@ -3,16 +3,22 @@ services:
     image: mysql:latest
     env_file:
       - .env
+    environment:
+      - MYSQL_DATABASE=${USER_MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${USER_MYSQL_ROOT_PASSWORD}
     networks:
       - studdy-buddy-net
     container_name: user-mysql
-    depends_on:
-      - connect
+
   user:
     build: ../user
     image: user
     env_file:
       - .env
+    environment:
+      - ConnectionStrings__DbConnectionString=${USER_MYSQL_CONNECTION_STRING}
+      - ASPNETCORE_URLS=${USER_PORT}
+      - Kafka__BootstrapServers=${USER_KAFKA_BOOTSTRAP_SERVERS}
     networks:
       - studdy-buddy-net
     container_name: user
@@ -35,4 +41,4 @@ services:
       - studdy-buddy-net
     volumes:
       - ./replicas/source.user.sh:/tmp/entrypoint.sh
-    command: sh -c "/tmp/entrypoint.sh"
+    command: sh -c "sh /tmp/entrypoint.sh"

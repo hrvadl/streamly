@@ -6,7 +6,9 @@ import (
 	"net"
 
 	"github.com/hrvadl/studdy-buddy/auth/pkg/config"
+	"github.com/hrvadl/studdy-buddy/auth/pkg/db"
 	"github.com/hrvadl/studdy-buddy/auth/pkg/pb"
+	"github.com/hrvadl/studdy-buddy/auth/pkg/repositories"
 	"github.com/hrvadl/studdy-buddy/auth/pkg/service"
 	"google.golang.org/grpc"
 )
@@ -15,13 +17,17 @@ func main() {
 	l := log.Default()
 	l.Print("auth service starting...")
 	c := config.Load()
+	db := db.Init(c)
+	userReader := repositories.NewUserReader(db)
+	userWriter := repositories.NewUserWriter(c)
+
 	TCPServer, err := net.Listen("tcp", fmt.Sprintf(":%v", c.Port))
 
 	if err != nil {
 		l.Fatalf("cannot listen on TCP PORT %v %v", c.Port, err)
 	}
 
-	authService := service.New()
+	authService := service.New(userReader, userWriter, c)
 
 	gRPCServer := grpc.NewServer()
 	pb.RegisterAuthServer(gRPCServer, authService)

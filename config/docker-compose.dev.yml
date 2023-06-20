@@ -1,0 +1,160 @@
+services:
+  email:
+    build: ../email
+    image: email
+    container_name: email
+    env_file:
+      - .env
+    restart: on-failure
+    depends_on:
+      - kafka
+    networks:
+      - dev-net
+  user-mysql:
+    image: mysql:latest
+    env_file:
+      - .env
+    environment:
+      - MYSQL_DATABASE=${USER_MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${USER_MYSQL_ROOT_PASSWORD}
+    networks:
+      - dev-net
+    container_name: user-mysql
+
+  user:
+    build: ../user
+    image: user
+    env_file:
+      - .env
+    environment:
+      - ConnectionStrings__DbConnectionString=${USER_MYSQL_CONNECTION_STRING}
+      - ASPNETCORE_URLS=${USER_PORT}
+      - Kafka__BootstrapServers=${USER_KAFKA_BOOTSTRAP_SERVERS}
+    networks:
+      - dev-net
+    ports:
+      - 80:80
+    container_name: user
+    restart: on-failure
+    depends_on:
+      - user-mysql
+
+  user_db_cfg:
+    build:
+      context: .
+      dockerfile: ../replicator/alpine.Dockerfile
+    container_name: user_db_cfg
+    env_file:
+      - .env
+    depends_on:
+      - user
+      - kafka
+      - connect
+    restart: on-failure
+    networks:
+      - dev-net
+    volumes:
+      - ./replicas/source.user.sh:/tmp/entrypoint.sh
+    command: sh -c "sh /tmp/entrypoint.sh"
+
+  zookeeper:
+    image: quay.io/debezium/zookeeper
+    env_file:
+      - .env
+    networks:
+      - dev-net 
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+
+  kafka:
+    image: quay.io/debezium/kafka
+    env_file:
+      - .env
+    networks:
+      - dev-net 
+    container_name: kafka
+    ports:
+      - 9092:9092
+    depends_on:
+      - zookeeper
+  connect:
+    image: connector
+    build: ../replicator
+    networks:
+      - dev-net 
+    container_name: connect
+    env_file:
+      - .env
+    volumes:
+      - ./.env:/data/credentials.properties
+    depends_on:
+      - kafka
+      - user-mysql
+      - auth-mysql
+
+  gateway:
+    build: ../gateway
+    image: gateway
+    ports:
+      - 6666:6666
+    networks:
+      - dev-net
+    container_name: gateway
+    env_file:
+      - .env
+    depends_on:
+      - user
+      - auth
+
+  auth:
+    build: ../auth
+    image: auth
+    container_name: auth
+    env_file:
+      - .env
+    restart: on-failure
+    ports:
+      - 3030:3030
+    networks:
+      - dev-net
+    depends_on:
+      - user
+      - auth-mysql
+  auth-mysql:
+    image: mysql:latest
+    networks:
+      - dev-net
+    ports:
+      - 3307:3306
+    env_file:
+      - .env
+    container_name: auth-mysql
+    environment:
+      - MYSQL_DATABASE=${AUTH_MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${AUTH_MYSQL_ROOT_PASSWORD}
+
+  auth_db_cfg:
+    build:
+      context: .
+      dockerfile: ../replicator/alpine.Dockerfile
+    container_name: auth_db_cfg
+    env_file:
+      - .env
+    depends_on:
+      - auth
+      - kafka
+      - connect
+    restart: on-failure
+    networks:
+      - dev-net
+    volumes:
+      - ./replicas/sink.auth.sh:/tmp/entrypoint.sh
+    command: sh -c "sh /tmp/entrypoint.sh"
+
+networks:
+  dev-net:
+    name: dev-net 
+    driver: bridge

@@ -27,6 +27,8 @@ services:
       - ./.env:/data/credentials.properties
     depends_on:
       - kafka
+      - user-mysql
+      - auth-mysql
 
 networks:
   studdy-buddy-net:

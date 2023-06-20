@@ -1,3 +1,4 @@
+using Confluent.Kafka;
 using Microsoft.EntityFrameworkCore;
 using User.Infrastructure.Persistence;
 using User.Infrastructure.Seeding;
@@ -13,6 +14,9 @@ var configuration = builder.Configuration;
 // Add services to the container.
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
+
+// Kafka
+builder.Services.Configure<ProducerConfig>(configuration.GetSection("Kafka"));
 
 builder.Services.AddDbContext<UserDbContext>(options =>
 {

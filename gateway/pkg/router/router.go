@@ -14,7 +14,11 @@ func Configure(c *config.Config) *gin.Engine {
 	userSVC := user.NewService(user.InitClient(c))
 
 	r.POST("/sign-in", authSVC.HandleSignIn())
+	r.POST("/sign-up", authSVC.HandleSignUp())
+	r.POST("/reset-password", userSVC.HandleChangePassword())
+
 	r.GET("/user/:id", userSVC.HandleGetByID())
+	r.POST("/user", userSVC.HandleCreate())
 
 	return r
 }

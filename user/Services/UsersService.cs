@@ -1,8 +1,13 @@
+using Confluent.Kafka;
+using Email;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
-using User;
+using Microsoft.Extensions.Options;
 using User.Entities;
 using User.Infrastructure.Persistence;
+using User.Infrastructure.Razor.PasswordReset;
 
 namespace User.Services;
 
@@ -10,11 +15,13 @@ public class UsersService : Users.UsersBase
 {
     private readonly ILogger<UsersService> logger;
     private readonly UserDbContext dbContext;
+    private readonly ProducerConfig messagesProducerConfig;
 
-    public UsersService(ILogger<UsersService> logger, UserDbContext dbContext)
+    public UsersService(ILogger<UsersService> logger, UserDbContext dbContext, IOptions<ProducerConfig> messagesProducerConfig)
     {
         this.logger = logger;
         this.dbContext = dbContext;
+        this.messagesProducerConfig = messagesProducerConfig.Value;
     }
 
     public override async Task<CreateResponse> Create(CreateRequest request, ServerCallContext context)
@@ -65,5 +72,28 @@ public class UsersService : Users.UsersBase
             Login = user.Login,
             Email = user.Email,
         };
+    }
+
+    public override async Task<Empty> ResetPassword(ResetPasswordRequest request, ServerCallContext context)
+    {
+        var emailTemplate = new PasswordResetTemplate()
+        {
+            ResetLink = request.Email,
+        };
+        var emailHtml = await emailTemplate.RenderAsync(context.CancellationToken);
+        using (var producer = new ProducerBuilder<Null, byte[]>(messagesProducerConfig).SetValueSerializer(Serializers.ByteArray).Build())
+        {
+            var payload = new MailPayload()
+            {
+                Subject = "Password reset",
+                HTML = emailHtml,
+            };
+            payload.Receivers.Add(request.Email);
+            await producer.ProduceAsync("sendEmail", new Message<Null, byte[]>
+            {
+                Value = payload.ToByteArray(),
+            });
+        }
+        return new Empty();
     }
 }

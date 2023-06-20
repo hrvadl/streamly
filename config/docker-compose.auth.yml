@@ -7,6 +7,34 @@ services:
     container_name: auth
     env_file:
       - .env
+    restart: on-failure
     depends_on:
       - user
-      
+      - auth-mysql
+  auth-mysql:
+    image: mysql:latest
+    networks:
+      - studdy-buddy-net
+    env_file:
+      - .env
+    container_name: auth-mysql
+    environment:
+      - MYSQL_DATABASE=${AUTH_MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${AUTH_MYSQL_ROOT_PASSWORD}
+  auth_db_cfg:
+    build:
+      context: .
+      dockerfile: ../replicator/alpine.Dockerfile
+    container_name: auth_db_cfg
+    env_file:
+      - .env
+    depends_on:
+      - auth
+      - kafka
+      - connect
+    restart: on-failure
+    networks:
+      - studdy-buddy-net
+    volumes:
+      - ./replicas/sink.auth.sh:/tmp/entrypoint.sh
+    command: sh -c "sh /tmp/entrypoint.sh"
