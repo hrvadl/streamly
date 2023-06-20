@@ -15,6 +15,17 @@ import (
 
 const checkDelay = time.Second
 
+func normalizeReceivers(receivers []string) []lib.SendSmtpEmailTo {
+	sendTo := make([]lib.SendSmtpEmailTo, len(receivers))
+
+	for _, r := range receivers {
+
+		sendTo = append(sendTo, lib.SendSmtpEmailTo{Email: r})
+	}
+
+	return sendTo
+}
+
 func InitConsumer(cfg *config.Config, l *log.Logger) {
 	sigchan := make(chan os.Signal, 1)
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
@@ -61,7 +72,12 @@ cons:
 				continue
 			}
 
-			_, err = email.SendEmail(&lib.SendSmtpEmail{})
+			_, err = email.SendEmail(&lib.SendSmtpEmail{
+				Sender:      &lib.SendSmtpEmailSender{Email: "test@example.com"},
+				To:          normalizeReceivers(mp.Receivers),
+				HtmlContent: mp.HTML,
+				Subject:     mp.Subject,
+			})
 
 			if err != nil {
 				l.Printf("failed to send email: %v\n", err)
