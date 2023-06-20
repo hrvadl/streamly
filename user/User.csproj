@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <Protobuf Include="Protos\user.proto" GrpcServices="Server" />
-    <Protobuf Include="..\email\pkg\pb\email.proto" />
+    <Protobuf Include="Protos\email.proto" />
   </ItemGroup>
 
   <ItemGroup>
