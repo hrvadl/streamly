@@ -1,4 +1,15 @@
 services:
+  email:
+    build: ../email
+    image: email
+    container_name: email
+    env_file:
+      - .env
+    restart: on-failure
+    depends_on:
+      - kafka
+    networks:
+      - dev-net
   user-mysql:
     image: mysql:latest
     env_file:
@@ -18,11 +29,11 @@ services:
     environment:
       - ConnectionStrings__DbConnectionString=${USER_MYSQL_CONNECTION_STRING}
       - ASPNETCORE_URLS=${USER_PORT}
-      - Kafka_BootstrapServers=${USER_KAFKA_BOOTSTRAP_SERVERS}
-    ports:
-      - 80:80
+      - Kafka__BootstrapServers=${USER_KAFKA_BOOTSTRAP_SERVERS}
     networks:
       - dev-net
+    ports:
+      - 80:80
     container_name: user
     restart: on-failure
     depends_on:
@@ -40,8 +51,6 @@ services:
       - kafka
       - connect
     restart: on-failure
-    ports:
-      - 8080:80
     networks:
       - dev-net
     volumes:
@@ -103,14 +112,14 @@ services:
   auth:
     build: ../auth
     image: auth
-    networks:
-      - dev-net
     container_name: auth
     env_file:
       - .env
     restart: on-failure
     ports:
       - 3030:3030
+    networks:
+      - dev-net
     depends_on:
       - user
       - auth-mysql
@@ -144,18 +153,6 @@ services:
     volumes:
       - ./replicas/sink.auth.sh:/tmp/entrypoint.sh
     command: sh -c "sh /tmp/entrypoint.sh"
-
-  email:
-    build: ../email
-    image: email
-    container_name: email
-    env_file:
-      - .env
-    restart: on-failure
-    depends_on:
-      - kafka
-    networks:
-      - dev-net
 
 networks:
   dev-net:
