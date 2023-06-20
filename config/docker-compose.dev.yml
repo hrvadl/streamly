@@ -8,8 +8,6 @@ services:
       - MYSQL_ROOT_PASSWORD=${USER_MYSQL_ROOT_PASSWORD}
     networks:
       - dev-net
-    ports:
-      - 3306:3306
     container_name: user-mysql
 
   user:
@@ -17,12 +15,16 @@ services:
     image: user
     env_file:
       - .env
+    environment:
+      - ConnectionStrings__DbConnectionString=${USER_MYSQL_CONNECTION_STRING}
+      - ASPNETCORE_URLS=${USER_PORT}
+      - Kafka_BootstrapServers=${USER_KAFKA_BOOTSTRAP_SERVERS}
+    ports:
+      - 80:80
     networks:
       - dev-net
     container_name: user
     restart: on-failure
-    ports:
-      - 80:80
     depends_on:
       - user-mysql
 
