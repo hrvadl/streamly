@@ -15,6 +15,10 @@ services:
     image: user
     env_file:
       - .env
+    environment:
+      - ConnectionStrings__DbConnectionString=${USER_MYSQL_CONNECTION_STRING}
+      - ASPNETCORE_URLS=${USER_PORT}
+      - Kafka__BootstrapServers=${USER_KAFKA_BOOTSTRAP_SERVERS}
     networks:
       - studdy-buddy-net
     container_name: user
@@ -33,8 +37,6 @@ services:
       - kafka
       - connect
     restart: on-failure
-    ports:
-      - 8080:80
     networks:
       - studdy-buddy-net
     volumes:

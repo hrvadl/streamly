@@ -5,4 +5,4 @@ proto:
 	protoc --go_out=../gateway/pkg/auth --go_opt=paths=import \
 	--go-grpc_out=../gateway/pkg/auth --go-grpc_opt=paths=import pkg/pb/*.proto
 server:
-	go run cmd/main.go
+	cd cmd && go run main.go

@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
 
 option csharp_namespace = "User";
 
@@ -10,6 +11,7 @@ package user;
 service Users {
   rpc Create (CreateRequest) returns (CreateResponse);
   rpc GetById (GetByIdRequest) returns (GetByIdResponse);
+  rpc ResetPassword (ResetPasswordRequest) returns (google.protobuf.Empty);
 }
 
 
@@ -31,4 +33,9 @@ message GetByIdResponse {
   int32 id = 1;
   string login = 2;
   string email = 3;
+}
+
+// GetById
+message ResetPasswordRequest {
+  string email = 1;
 }

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/adapter"
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/config"
 	"github.com/hrvadl/studdy-buddy/gateway/pkg/user/pb"
@@ -38,6 +39,13 @@ func (c *UserServiceClient) HandleCreate() gin.HandlerFunc {
 	return adapter.Wrap[pb.CreateRequest, pb.CreateResponse](
 		c.client.Create, adapter.WithBodyExtractor[pb.CreateRequest],
 	)
+}
+
+func (c *UserServiceClient) HandleChangePassword() gin.HandlerFunc {
+	return adapter.Wrap[pb.ResetPasswordRequest, empty.Empty](
+		c.client.ResetPassword, adapter.WithBodyExtractor[pb.ResetPasswordRequest],
+	)
+
 }
 
 func NewService(uc pb.UsersClient) *UserServiceClient {

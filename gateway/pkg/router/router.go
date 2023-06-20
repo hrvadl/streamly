@@ -15,6 +15,7 @@ func Configure(c *config.Config) *gin.Engine {
 
 	r.POST("/sign-in", authSVC.HandleSignIn())
 	r.POST("/sign-up", authSVC.HandleSignUp())
+	r.POST("/reset-password", userSVC.HandleChangePassword())
 
 	r.GET("/user/:id", userSVC.HandleGetByID())
 	r.POST("/user", userSVC.HandleCreate())
